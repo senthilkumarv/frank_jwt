@@ -189,7 +189,7 @@ fn sign(data: &str, private_key: PKey<Private>, digest: MessageDigest) -> Result
     Ok(b64_enc(signature.as_slice(), base64::URL_SAFE_NO_PAD))
 }
 
-fn decode_segments(encoded_token: &String) -> Result<(JsonValue, JsonValue, Vec<u8>, String), Error> {
+pub fn decode_segments(encoded_token: &String) -> Result<(JsonValue, JsonValue, Vec<u8>, String), Error> {
     let raw_segments: Vec<&str> = encoded_token.split(".").collect();
     if raw_segments.len() != SEGMENTS_COUNT {
         return Err(Error::JWTInvalid);
@@ -242,7 +242,7 @@ fn sign_hmac2(data: &str, key: &Vec<u8>, algorithm: Algorithm) -> Result<Vec<u8>
     signer.sign_to_vec().map_err(Error::from)
 }
 
-fn verify_signature<P: ToKey>(algorithm: Algorithm, signing_input: String, signature: &[u8], public_key: &P) -> Result<bool, Error> {
+pub fn verify_signature<P: ToKey>(algorithm: Algorithm, signing_input: String, signature: &[u8], public_key: &P) -> Result<bool, Error> {
     match algorithm {
         Algorithm::HS256 | Algorithm::HS384 | Algorithm::HS512 => {
             let signature2 = sign_hmac2(&signing_input, &public_key.to_key()?, algorithm)?;
